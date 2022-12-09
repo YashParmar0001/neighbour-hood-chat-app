@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Neighbour Hood</string>
+    <string name="message_image_view">It\'s image message!</string>
+    <string name="add_image_message">To send image message</string>
+    <string name="say_something">Say something...</string>
+    <string name="send_message">Send message</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="sign_out">Sign out</string>
+    <string name="enter_friend_email">Enter friend\'s email</string>
+    <string name="add_friend">Add friend</string>
+</resources>

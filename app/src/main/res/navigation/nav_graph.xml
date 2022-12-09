@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph.xml"
+    app:startDestination="@id/friendListFragment">
+
+    <fragment
+        android:id="@+id/friendListFragment"
+        android:name="com.example.android.neighbourhood.FriendListFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_friend_list" >
+        <action
+            android:id="@+id/action_friendListFragment_to_friendFragment"
+            app:destination="@id/friendFragment" />
+        <action
+            android:id="@+id/action_friendListFragment_to_addFriendFragment"
+            app:destination="@id/addFriendFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/friendFragment"
+        android:name="com.example.android.neighbourhood.FriendFragment"
+        android:label="fragment_friend2"
+        tools:layout="@layout/fragment_friend">
+        <argument
+            android:name="email"
+            app:argType="string" />
+        <argument
+            android:name="name"
+            app:argType="string" />
+        <argument
+            android:name="photoUrl"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/addFriendFragment"
+        android:name="com.example.android.neighbourhood.AddFriendFragment"
+        android:label="Add Friend"
+        tools:layout="@layout/fragment_add_friend" />
+</navigation>
