@@ -41,6 +41,7 @@ class FriendFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseDatabase
     private lateinit var chatRef: DatabaseReference
+
     private lateinit var chat: String
     private lateinit var adapter: FriendAdapter
 
