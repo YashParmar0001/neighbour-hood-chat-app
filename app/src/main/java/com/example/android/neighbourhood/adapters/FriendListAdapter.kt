@@ -1,29 +1,26 @@
 package com.example.android.neighbourhood.adapters
 
-import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.bumptech.glide.Glide
+import com.example.android.neighbourhood.FriendListFragmentDirections
+import com.example.android.neighbourhood.R
 import com.example.android.neighbourhood.databinding.FriendViewBinding
 import com.example.android.neighbourhood.model.Friend
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import com.bumptech.glide.Glide
-import com.example.android.neighbourhood.FriendListFragment
-import com.example.android.neighbourhood.FriendListFragmentDirections
-import com.example.android.neighbourhood.MainActivity
-import com.example.android.neighbourhood.R
 
 private const val TAG = "FriendListAdapter"
+
 class FriendListAdapter(
     options: FirebaseRecyclerOptions<Friend>,
-): FirebaseRecyclerAdapter<Friend, ViewHolder>(options) {
+) : FirebaseRecyclerAdapter<Friend, ViewHolder>(options) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -42,13 +39,15 @@ class FriendListAdapter(
                 .actionFriendListFragmentToFriendFragment(
                     model.userEmail.toString(),
                     model.name,
-                    model.photoUrl.toString()
+                    model.photoUrl.toString(),
+                    model.userIdOS.toString()
                 )
             holder.itemView.findNavController().navigate(action)
         }
     }
 
-    inner class FriendViewHolder(private val binding: FriendViewBinding): ViewHolder(binding.root) {
+    inner class FriendViewHolder(private val binding: FriendViewBinding) :
+        ViewHolder(binding.root) {
         fun bind(item: Friend) {
             binding.friendName.text = item.name
 

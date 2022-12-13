@@ -4,10 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.*
-import android.widget.Toast
-import androidx.core.view.MenuHost
-import androidx.core.view.MenuProvider
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,32 +15,25 @@ import com.bumptech.glide.Glide
 import com.example.android.neighbourhood.adapters.FriendListAdapter
 import com.example.android.neighbourhood.databinding.FragmentFriendListBinding
 import com.example.android.neighbourhood.model.Friend
-import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import com.onesignal.OSDeviceState
+import com.onesignal.OneSignal
 
-class FriendListFragment: Fragment() {
+class FriendListFragment : Fragment() {
     private var _binding: FragmentFriendListBinding? = null
 
-    //    private lateinit var manager: WrapManager
     private lateinit var manager: WrapManager
 
     // Firebase instances
     private lateinit var auth: FirebaseAuth
-    private lateinit var db: FirebaseDatabase
     private lateinit var adapter: FriendListAdapter
 
-    // For menu
-    private lateinit var menuHost: MenuHost
+    // For OneSignal
+    private lateinit var device: OSDeviceState
 
     private val binding get() = _binding
 
@@ -56,6 +48,9 @@ class FriendListFragment: Fragment() {
         // If user is not signed in
         auth = Firebase.auth
 
+        // Initialize device state
+        device = OneSignal.getDeviceState()!!
+
         if (auth.currentUser == null) {
             startActivity(Intent(this.context, SignInActivity::class.java))
         } else {
@@ -66,16 +61,19 @@ class FriendListFragment: Fragment() {
                 .child("users")
                 .child(getUserEmail().replace(".", ","))
                 .child("details")
-                .setValue(Friend(
-                    user?.displayName.toString(),
-                    user?.photoUrl.toString(),
-                    user?.email.toString()
-                ))
+                .setValue(
+                    Friend(
+                        user?.displayName.toString(),
+                        user?.photoUrl.toString(),
+                        user?.email.toString(),
+                        device.userId.toString()
+                    )
+                )
 
             // Initialize realtime database
             val ref = db.reference
                 .child("users")
-                .child("${getUserEmail().replace(".", ",")}")
+                .child(getUserEmail().replace(".", ","))
 
             // For recyclerview
             val options = FirebaseRecyclerOptions.Builder<Friend>()
@@ -105,10 +103,6 @@ class FriendListFragment: Fragment() {
         if (photoView != null) {
             Glide.with(view.context).load(getPhotoUrl()).into(photoView)
         }
-
-        // Creating menu
-//        menuHost = requireHost() as MenuHost
-//        menuHost.addMenuProvider(object : MyMenuProvider(){})
     }
 
     override fun onDestroyView() {
@@ -119,6 +113,8 @@ class FriendListFragment: Fragment() {
     override fun onStart() {
         super.onStart()
         Log.d("FriendListFragment", "On start called!")
+        // Clear all notifications
+        OneSignal.clearOneSignalNotifications()
         // Check if user is signed in.
         if (auth.currentUser == null) {
             // Not signed in, launch the Sign In activity
@@ -156,11 +152,6 @@ class FriendListFragment: Fragment() {
         }
     }
 
-    private fun signOut() {
-        AuthUI.getInstance().signOut(this.requireContext())
-        startActivity(Intent(this.context, SignInActivity::class.java))
-    }
-
     private fun getPhotoUrl(): String? {
         val user = auth.currentUser
         return user?.photoUrl?.toString()
@@ -179,22 +170,5 @@ class FriendListFragment: Fragment() {
             return user.email.toString()
         }
         return "anonymous"
-    }
-
-    open inner class MyMenuProvider: MenuProvider {
-        override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-            Log.d("FriendListFragment", "Menu created!")
-            menuInflater.inflate(R.menu.main_menu, menu)
-        }
-
-        override fun onMenuItemSelected(item: MenuItem): Boolean {
-            return when (item.itemId) {
-                R.id.sign_out_menu -> {
-                    signOut()
-                    true
-                }
-                else -> false
-            }
-        }
     }
 }

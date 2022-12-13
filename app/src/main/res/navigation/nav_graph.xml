@@ -31,6 +31,9 @@
         <argument
             android:name="photoUrl"
             app:argType="string" />
+        <argument
+            android:name="userIdOS"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/addFriendFragment"

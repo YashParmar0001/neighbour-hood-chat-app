@@ -29,6 +29,8 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
+import com.onesignal.OneSignal
+import org.json.JSONObject
 
 
 class FriendFragment : Fragment() {
@@ -128,8 +130,13 @@ class FriendFragment : Fragment() {
 
         // When the send button is clicked send a text message
         binding?.sendButton?.setOnClickListener {
+            val text = binding!!.messageEditText.text.toString()
+            // Get friend id to send notification
+            val friendId = args.userIdOS
+            Log.d("FriendFragment", friendId)
+
             val friendlyMessage = FriendlyMessage(
-                binding!!.messageEditText.text.toString(),
+                text,
                 getUserName(),
                 userEmail,
                 getPhotoUrl(),
@@ -137,6 +144,8 @@ class FriendFragment : Fragment() {
             )
             chatRef.push().setValue(friendlyMessage)
             binding!!.messageEditText.setText("")
+            // Send notification
+            sendNotification(text, getUserName().toString(), friendId, "")
         }
 
         // When the image button is clicked, launch the image picker
@@ -152,6 +161,8 @@ class FriendFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        // Clear all notifications
+        OneSignal.clearOneSignalNotifications()
         adapter.startListening()
     }
 
@@ -216,6 +227,13 @@ class FriendFragment : Fragment() {
                         chatRef
                             .child(key!!)
                             .setValue(friendlyMessage)
+                        // Send notification
+                        sendNotification(
+                            "Photo",
+                            getUserName().toString(),
+                            args.userIdOS,
+                            uri.toString()
+                        )
                     }
             }
             .addOnFailureListener(this.requireActivity()) { e ->
@@ -268,6 +286,21 @@ class FriendFragment : Fragment() {
         } else {
             Glide.with(view.context).load(url).into(view)
         }
+    }
+
+    // Function to send notification
+    private fun sendNotification(message: String, heading: String, id: String, picture: String) {
+        Log.d("Friend", picture)
+        val notification = JSONObject(
+            "{" +
+                    "'contents': {'en':'$message'}, " +
+                    "'include_player_ids': ['$id'], " +
+                    "'headings': {'en':'$heading'}," +
+                    "'big_picture': '$picture'}"
+        )
+        val handler = ApplicationClass.Handler()
+        Log.d("FriendFragment", notification.toString())
+        OneSignal.postNotification(notification, handler)
     }
 
     companion object {

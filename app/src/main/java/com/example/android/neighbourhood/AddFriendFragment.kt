@@ -2,7 +2,6 @@ package com.example.android.neighbourhood
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,18 +9,16 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.android.neighbourhood.databinding.FragmentAddFriendBinding
-import com.example.android.neighbourhood.databinding.FragmentFriendListBinding
 import com.example.android.neighbourhood.model.Friend
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 
-class AddFriendFragment: Fragment() {
+class AddFriendFragment : Fragment() {
     private var _binding: FragmentAddFriendBinding? = null
 
     private lateinit var auth: FirebaseAuth
@@ -40,7 +37,7 @@ class AddFriendFragment: Fragment() {
         db = Firebase.database
         ref = db.reference
             .child("users")
-            .child("${getUserEmail().replace(".", ",")}")
+            .child(getUserEmail().replace(".", ","))
 
         return binding?.root
     }
@@ -68,7 +65,8 @@ class AddFriendFragment: Fragment() {
                     friend = Friend(
                         value.name,
                         value.photoUrl,
-                        value.userEmail
+                        value.userEmail,
+                        value.userIdOS
                     )
                     // Add friend to current user
                     ref.child("friends").child(email).setValue(friend)
