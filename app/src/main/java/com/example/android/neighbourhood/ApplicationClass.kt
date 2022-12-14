@@ -33,10 +33,12 @@ class ApplicationClass : Application() {
 
     class Handler : PostNotificationResponseHandler {
         override fun onSuccess(response: JSONObject?) {
+            Log.d("ApplicationClass", "Notifications sent")
             Log.d("ApplicationClass", response.toString())
         }
 
         override fun onFailure(response: JSONObject?) {
+            Log.d("ApplicationClass", "Notifications don't sent")
             Log.d("ApplicationClass", response.toString())
         }
     }

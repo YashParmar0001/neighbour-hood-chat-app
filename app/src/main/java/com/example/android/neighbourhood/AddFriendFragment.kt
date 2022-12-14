@@ -17,6 +17,8 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import com.onesignal.OSDeviceState
+import com.onesignal.OneSignal
 
 class AddFriendFragment : Fragment() {
     private var _binding: FragmentAddFriendBinding? = null
@@ -24,6 +26,7 @@ class AddFriendFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseDatabase
     private lateinit var ref: DatabaseReference
+    private lateinit var device: OSDeviceState
 
     private val binding get() = _binding
 
@@ -35,6 +38,7 @@ class AddFriendFragment : Fragment() {
         _binding = FragmentAddFriendBinding.inflate(inflater, container, false)
         auth = Firebase.auth
         db = Firebase.database
+        device = OneSignal.getDeviceState()!!
         ref = db.reference
             .child("users")
             .child(getUserEmail().replace(".", ","))
@@ -75,13 +79,12 @@ class AddFriendFragment : Fragment() {
                         Friend(
                             auth.currentUser?.displayName.toString(),
                             auth.currentUser?.photoUrl.toString(),
-                            auth.currentUser?.email.toString()
+                            auth.currentUser?.email.toString(),
+                            device.userId?.toString()
                         )
                     )
                     Toast.makeText(context, "Friend added", Toast.LENGTH_LONG).show()
-//                    Log.d("AddFriend", "Friend added")
                 } else {
-//                    Log.d("AddFriend", "Doesn't use app")
                     Toast.makeText(context, "Doesn't use app", Toast.LENGTH_LONG).show()
                 }
             }.addOnFailureListener {

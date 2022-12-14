@@ -66,7 +66,7 @@ class FriendListFragment : Fragment() {
                         user?.displayName.toString(),
                         user?.photoUrl.toString(),
                         user?.email.toString(),
-                        device.userId.toString()
+                        device.userId?.toString()
                     )
                 )
 

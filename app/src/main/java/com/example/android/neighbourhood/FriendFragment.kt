@@ -290,7 +290,6 @@ class FriendFragment : Fragment() {
 
     // Function to send notification
     private fun sendNotification(message: String, heading: String, id: String, picture: String) {
-        Log.d("Friend", picture)
         val notification = JSONObject(
             "{" +
                     "'contents': {'en':'$message'}, " +
