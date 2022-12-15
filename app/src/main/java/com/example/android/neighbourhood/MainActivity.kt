@@ -13,7 +13,6 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.android.neighbourhood.databinding.ActivityMainBinding
 import com.firebase.ui.auth.AuthUI
-import com.onesignal.OneSignal
 
 class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
@@ -25,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // Clear all notifications
-        OneSignal.clearOneSignalNotifications()
+//        OneSignal.clearOneSignalNotifications()
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment

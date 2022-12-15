@@ -29,6 +29,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
+import com.onesignal.OSDeviceState
 import com.onesignal.OneSignal
 import org.json.JSONObject
 
@@ -47,6 +48,8 @@ class FriendFragment : Fragment() {
     private lateinit var chat: String
     private lateinit var adapter: FriendAdapter
 
+    private lateinit var device: OSDeviceState
+
     private val binding get() = _binding
 
     private val openDocument = registerForActivityResult(MyOpenDocumentContract()) { uri ->
@@ -63,6 +66,9 @@ class FriendFragment : Fragment() {
         auth = Firebase.auth
         // Initializing realtime database
         db = Firebase.database
+
+        // Initialize device state
+        device = OneSignal.getDeviceState()!!
 
         val userEmail = auth.currentUser?.email
         val friendEmail = args.email
@@ -232,7 +238,7 @@ class FriendFragment : Fragment() {
                             "Photo",
                             getUserName().toString(),
                             args.userIdOS,
-                            uri.toString()
+                            uri.toString(),
                         )
                     }
             }
@@ -295,7 +301,11 @@ class FriendFragment : Fragment() {
                     "'contents': {'en':'$message'}, " +
                     "'include_player_ids': ['$id'], " +
                     "'headings': {'en':'$heading'}," +
-                    "'big_picture': '$picture'}"
+                    "'big_picture': '$picture'," +
+                    "'data': {'email': '${getUserEmail()}'," +
+                    "'name': '${getUserName()}'," +
+                    "'photoUrl': '${getPhotoUrl()}'," +
+                    "'userIdOS': '${device.userId}'}}"
         )
         val handler = ApplicationClass.Handler()
         Log.d("FriendFragment", notification.toString())

@@ -31,10 +31,12 @@ class FriendListAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int, model: Friend) {
         (holder as FriendViewHolder).bind(model)
+
+        // On clicking friend field in FriendListFragment
         holder.itemView.setOnClickListener {
             Log.d("Friend", "Clicked: ${model.userEmail.toString()}")
 
-            // Navigate to friend fragment with email of friend
+            // Navigate to friend fragment with details of friend
             val action = FriendListFragmentDirections
                 .actionFriendListFragmentToFriendFragment(
                     model.userEmail.toString(),

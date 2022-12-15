@@ -1,6 +1,5 @@
 package com.example.android.neighbourhood
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -9,8 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.android.neighbourhood.adapters.FriendListAdapter
 import com.example.android.neighbourhood.databinding.FragmentFriendListBinding
@@ -26,7 +23,7 @@ import com.onesignal.OneSignal
 class FriendListFragment : Fragment() {
     private var _binding: FragmentFriendListBinding? = null
 
-    private lateinit var manager: WrapManager
+    private lateinit var manager: FriendFragment.WrapManager
 
     // Firebase instances
     private lateinit var auth: FirebaseAuth
@@ -80,10 +77,28 @@ class FriendListFragment : Fragment() {
                 .setQuery(ref.child("friends"), Friend::class.java)
                 .build()
             adapter = FriendListAdapter(options)
-            manager = WrapManager(this.requireContext())
+            manager = FriendFragment.WrapManager(this.requireContext())
             manager.stackFromEnd = false
             _binding?.friendRecyclerView?.layoutManager = manager
             _binding?.friendRecyclerView?.adapter = adapter
+        }
+
+        // On notification clicked
+        OneSignal.setNotificationOpenedHandler { result ->
+            if (result.notification.title == "Testing") {
+                Log.d("Friend", "Notification received")
+            }else {
+                val data = result.notification.additionalData
+                Log.d("Friend", "Data: ${result.notification.additionalData.get("email")}")
+                val action = FriendListFragmentDirections
+                    .actionFriendListFragmentToFriendFragment(
+                        data.get("email").toString(),
+                        data.get("name").toString(),
+                        data.get("photoUrl").toString(),
+                        data.get("userIdOS").toString()
+                    )
+                findNavController().navigate(action)
+            }
         }
 
         return binding?.root
@@ -137,19 +152,6 @@ class FriendListFragment : Fragment() {
             adapter.startListening()
         }
         super.onResume()
-    }
-
-    class WrapManager(context: Context) : LinearLayoutManager(context) {
-        override fun onLayoutChildren(
-            recycler: RecyclerView.Recycler?,
-            state: RecyclerView.State?
-        ) {
-            try {
-                super.onLayoutChildren(recycler, state)
-            } catch (e: java.lang.IndexOutOfBoundsException) {
-                Log.e("FriendListFragment", "Error occurred!")
-            }
-        }
     }
 
     private fun getPhotoUrl(): String? {
